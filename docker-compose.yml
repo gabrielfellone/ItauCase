@@ -1,0 +1,37 @@
+version: "3"
+services:
+  mysqldb:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'twittercase'
+      MYSQL_USER: 'root'
+      MYSQL_PASSWORD: ''
+      MYSQL_ROOT_PASSWORD: ''
+    ports:
+      # <Porta do SO HOST> : <Porta do SO container>
+      - '2019:3306'
+    expose:
+      - '3306'
+    networks: 
+      - developer-network
+    container_name: mysql-docker-container
+  
+  twittercore:    
+    build:
+      dockerfile: ./twitter-case-core/Dockerfile
+      context: .
+    image: openjdk:8-jdk-alpine
+    container_name: twitter-case-core
+    ports:
+    - "9022:9022"
+    networks: 
+    - developer-network
+    depends_on: 
+    - "mysqldb"
+    links:
+    - "mysqldb"
+
+networks: 
+    developer-network:
+        driver: bridge
